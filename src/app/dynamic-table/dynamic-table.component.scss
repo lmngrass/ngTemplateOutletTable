@@ -1,0 +1,10 @@
+.sortIcon:hover {
+  cursor: pointer;
+  transform: scale(1.2);
+  transition: scale 300ms ease-in;
+}
+.sortIcon {
+  width: 1rem;
+  height: 1rem;
+  margin: 0.2rem;
+}

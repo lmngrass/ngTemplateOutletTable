@@ -1,0 +1,85 @@
+<div class="table-responsive p-5">
+  <table class="table">
+    <thead>
+      <tr>
+        <ng-container
+          [ngTemplateOutlet]="headers || defaultHeaderTemplate"
+          [ngTemplateOutletContext]="{
+            sortFunction: sort,
+            tableData: tableData,
+            columnConfig: columns
+          }"
+        ></ng-container>
+      </tr>
+      @if(shouldFilterRowBeEnabled) {
+      <tr>
+        <ng-container [ngTemplateOutlet]="defaultFilterRow"></ng-container>
+      </tr>
+      }
+    </thead>
+    <tbody>
+      @for(item of tableData;track item.value) {
+      <tr>
+        <ng-container
+          [ngTemplateOutlet]="rows || defaultRowTemplate"
+          [ngTemplateOutletContext]="{ $implicit: item, columns: columns }"
+        ></ng-container>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<ng-template #defaultHeaderTemplate>
+  @for (config of columns;track $index) {
+  <th scope="col">
+    @if(config.sortable) {
+    <div class="d-flex flex-column">
+      <div class="sortIcon" (click)="sort(config.field, 'ASC')">🔼</div>
+      <div class="sortIcon" (click)="sort(config.field, 'DESC')">🔽</div>
+    </div>
+    }
+
+    {{ config.headerName | uppercase }}
+  </th>
+  }
+</ng-template>
+<ng-template #defaultRowTemplate let-item>
+  @if (selectionEnable) {
+  <td>
+    <input type="checkbox" name="" id="" />
+  </td>
+
+  } @for(config of columns;track $index;let first=$first) {
+  <td [attr.scope]="first ? 'row' : ''">
+    {{ item[config.field] }}
+  </td>
+  }
+</ng-template>
+
+<ng-template #defaultFilterRow>
+  @for(config of columns;track $index;) { @if(config.filterable) {
+  <td>
+    <div class="d-flex px-3">
+      <input
+        type="text"
+        class="form-control"
+        (input)="onFilterChange(config.field, $event)"
+        #filterInput
+      />
+      @if(filterValues[config.field]) {
+      <button
+        type="button"
+        class="btn btn-link"
+        (click)="clearFilter(config.field); filterInput.value = ''"
+      >
+        ❌
+        <!-- Clear icon (you can replace this with an SVG or FontAwesome icon) -->
+      </button>
+      }
+    </div>
+  </td>
+  } @else{
+  <td></td>
+  } }
+</ng-template>
